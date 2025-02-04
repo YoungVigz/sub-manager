@@ -23,7 +23,7 @@ The project is structured into three main components:
   - Integration with PostgreSQL for persistent storage.
 
 ### 2. Frontend
-- **Technology**: [React](https://reactjs.org/)
+- **Technology**: [Next.js](https://nextjs.org)
 - **Key Features**:
   - Responsive design for mobile and desktop users.
   - Interactive dashboard to display expenses and subscription details.
@@ -32,8 +32,6 @@ The project is structured into three main components:
 ## Authors
 
 - [@Gabriel Gałęza](https://www.github.com/YoungVigz)
-
-
 
 ## License
 

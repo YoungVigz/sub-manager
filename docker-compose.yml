@@ -14,10 +14,10 @@ services:
     depends_on:
       - postgres
 
-  # Frontend - React
+  # Frontend - Next.js
   frontend:
     build:
-      context: ./front-end
+      context: ./sub-manager-front-end
       dockerfile: Dockerfile
     container_name: frontend
     ports:
