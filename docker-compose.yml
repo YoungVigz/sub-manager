@@ -1,5 +1,4 @@
 services:
-  # Backend - Spring Boot
   backend:
     build:
       context: ./sub-manager
@@ -14,18 +13,28 @@ services:
     depends_on:
       - postgres
 
-  # Frontend - Next.js
   frontend:
     build:
       context: ./sub-manager-front-end
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: frontend
     ports:
-      - "3000:80"
+      - "3000:3000"
     depends_on:
       - backend
+    develop:
+      watch:
+        - action: sync
+          path: ./sub-manager-front-end
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./sub-manager-front-end/package.json
+          target: /app/package.json
+    environment:
+      - CHOKIDAR_USEPOLLING=true
 
-  # Database - PostgreSQL
   postgres:
     image: postgres:15.3
     container_name: postgres
@@ -40,3 +49,4 @@ services:
 
 volumes:
   postgres_data:
+  node_modules:

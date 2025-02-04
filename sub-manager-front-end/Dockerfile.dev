@@ -1,0 +1,15 @@
+FROM node:21.7.3-alpine
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install --include=dev
+
+COPY --chown=app:app . /app
+
+COPY . .
+
+EXPOSE 3000
+
+ENTRYPOINT [ "npm", "run", "dev" ]

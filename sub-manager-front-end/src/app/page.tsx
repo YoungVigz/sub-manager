@@ -19,6 +19,8 @@ export default function Home() {
       <div>
         {data === null ? "Loading" : data}
       </div>
+
+      testowaniesdfsdfsasdad
     </>
   )
 }
