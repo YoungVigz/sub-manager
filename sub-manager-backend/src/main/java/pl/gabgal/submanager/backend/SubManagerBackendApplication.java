@@ -1,13 +1,13 @@
-package pl.api.sub_manager;
+package pl.gabgal.submanager.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SubManagerApplication {
+public class SubManagerBackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SubManagerApplication.class, args);
+		SpringApplication.run(SubManagerBackendApplication.class, args);
 	}
 
 }

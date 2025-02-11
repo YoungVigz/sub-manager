@@ -1,17 +1,25 @@
 services:
   backend:
     build:
-      context: ./sub-manager
+      context: ./sub-manager-backend
       dockerfile: Dockerfile
     container_name: backend
     ports:
       - "8080:8080"
+    volumes:
+      - ./sub-manager-backend:/app
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
-      SPRING_DATASOURCE_USERNAME: myuser
-      SPRING_DATASOURCE_PASSWORD: mypassword
+      - SPRING_DEVTOOLS_REMOTE_SECRET=mysecret
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
     depends_on:
       - postgres
+    develop:
+      watch:
+      - action: sync+restart
+        path: ./sub-manager-backend
+        target: /app
+        ignore:
+          - target/
 
   frontend:
     build:
@@ -46,6 +54,16 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=gabrielgaleza@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    depends_on:
+      - postgres
 
 volumes:
   postgres_data:

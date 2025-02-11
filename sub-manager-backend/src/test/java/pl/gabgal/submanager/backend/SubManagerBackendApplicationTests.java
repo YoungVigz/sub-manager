@@ -1,10 +1,10 @@
-package pl.api.sub_manager;
+package pl.gabgal.submanager.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SubManagerApplicationTests {
+class SubManagerBackendApplicationTests {
 
 	@Test
 	void contextLoads() {
