@@ -11,6 +11,11 @@ services:
     environment:
       - SPRING_DEVTOOLS_REMOTE_SECRET=mysecret
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - DB_HOST=172.18.0.2
+      - DB_PORT=5432
+      - DB_NAME=mydb
+      - DB_USERNAME=myuser
+      - DB_PASSWORD=mypassword 
     depends_on:
       - postgres
     develop:
