@@ -64,7 +64,10 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=root
     depends_on:
       - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
 
 volumes:
   postgres_data:
   node_modules:
+  pgadmin_data:

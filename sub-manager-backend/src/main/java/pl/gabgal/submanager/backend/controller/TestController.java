@@ -1,4 +1,4 @@
-package pl.gabgal.submanager.backend;
+package pl.gabgal.submanager.backend.controller;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +10,6 @@ public class TestController {
     @CrossOrigin(origins = "*")
     @GetMapping("/")
     public String hello() {
-        return "Hello World!111222";
+        return "Hello, World!";
     }
 }
