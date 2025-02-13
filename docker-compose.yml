@@ -8,23 +8,18 @@ services:
       - "8080:8080"
     volumes:
       - ./sub-manager-backend:/app
+      - ~/.m2:/root/.m2
     environment:
-      - SPRING_DEVTOOLS_REMOTE_SECRET=mysecret
-      - SPRING_DEVTOOLS_RESTART_ENABLED=true
-      - DB_HOST=172.18.0.2
+      - JAVA_OPTS=-Dspring.devtools.restart.enabled=true -Dspring.devtools.livereload.enabled=true
+      - SPRING_PROFILES_ACTIVE=dev
+      - DB_HOST=postgres
       - DB_PORT=5432
       - DB_NAME=mydb
       - DB_USERNAME=myuser
       - DB_PASSWORD=mypassword 
     depends_on:
       - postgres
-    develop:
-      watch:
-      - action: sync+restart
-        path: ./sub-manager-backend
-        target: /app
-        ignore:
-          - target/
+    restart: unless-stopped
 
   frontend:
     build:
