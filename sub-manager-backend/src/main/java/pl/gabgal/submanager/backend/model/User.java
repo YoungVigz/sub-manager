@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.gabgal.submanager.backend.enums.Role;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,9 +37,15 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role = Role.USER;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Subscription> subscriptions = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserSettings userSettings;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

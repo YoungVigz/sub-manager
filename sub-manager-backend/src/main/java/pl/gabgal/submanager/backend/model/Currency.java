@@ -1,10 +1,17 @@
 package pl.gabgal.submanager.backend.model;
 
-
 import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "currency")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Currency {
 
     @Id
@@ -21,15 +28,6 @@ public class Currency {
     @Column(nullable = false)
     private String sign;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getShortName() { return shortName; }
-    public void setShortName(String shortName) { this.shortName = shortName; }
-
-    public String getSign() { return sign; }
-    public void setSign(String sign) { this.sign = sign; }
+    @OneToMany(mappedBy = "currency", cascade = CascadeType.ALL)
+    private List<Subscription> subscriptions;
 }
