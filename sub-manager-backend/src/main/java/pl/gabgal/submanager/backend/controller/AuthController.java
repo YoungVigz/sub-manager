@@ -1,0 +1,29 @@
+package pl.gabgal.submanager.backend.controller;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import pl.gabgal.submanager.backend.dto.LoginRequest;
+import pl.gabgal.submanager.backend.dto.RegisterRequest;
+import pl.gabgal.submanager.backend.service.AuthService;
+
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+public class AuthController {
+    private final AuthService authService;
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(authService.register(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
+    }
+}

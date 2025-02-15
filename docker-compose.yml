@@ -12,11 +12,15 @@ services:
     environment:
       - JAVA_OPTS=-Dspring.devtools.restart.enabled=true -Dspring.devtools.livereload.enabled=true
       - SPRING_PROFILES_ACTIVE=dev
+
+      # Those envs are only for dev purposes:
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_NAME=mydb
       - DB_USERNAME=myuser
       - DB_PASSWORD=mypassword 
+      - JWT_SECRET=Hg7GFFGmMETEty+af3KNLD48u0o/f/vMNo9d3R1p/Pw=
+      - JWT_EXP_TIME=86400000
     depends_on:
       - postgres
     restart: unless-stopped
