@@ -26,14 +26,14 @@ public class UserSettings {
     @Column(nullable = false)
     private AppLanguage language = AppLanguage.ENGLISH;
 
-    @ManyToOne
-    @JoinColumn(name = "currency_id", nullable = false)
-    private Currency defaultCurrency;
-
     @Column(nullable = false)
     private int notificationDaysBeforePayment = 2;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NotificationMethod notificationMethod = NotificationMethod.SMS;
+
+    @ManyToOne
+    @JoinColumn(name = "currency_id", nullable = false)
+    private Currency defaultCurrency;
 }

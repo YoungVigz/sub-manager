@@ -1,5 +1,6 @@
 package pl.gabgal.submanager.backend.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.gabgal.submanager.backend.model.Currency;
@@ -10,14 +11,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/currency")
+@RequiredArgsConstructor
 public class CurrencyController {
 
     private final CurrencyService currencyService;
 
-    public CurrencyController(CurrencyService currencyService) {
-        this.currencyService = currencyService;
-    }
-
+    @CrossOrigin(origins = "*")
     @GetMapping("/")
     public ResponseEntity<List<Currency>> getAllCurrencies() {
         List<Currency> currencies = currencyService.getAllCurrencies();

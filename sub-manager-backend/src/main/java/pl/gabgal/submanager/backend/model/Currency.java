@@ -28,6 +28,10 @@ public class Currency {
     @Column(nullable = false)
     private String sign;
 
+    /*
     @OneToMany(mappedBy = "currency", cascade = CascadeType.ALL)
     private List<Subscription> subscriptions;
+
+    @OneToMany(mappedBy = "defaultCurrency", cascade = CascadeType.ALL)
+    private List<UserSettings> userSettings;*/
 }
