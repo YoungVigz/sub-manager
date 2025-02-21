@@ -17,7 +17,7 @@ public class Currency {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "currency_id")
-    private Long id;
+    private Long currencyId;
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
@@ -31,7 +31,5 @@ public class Currency {
     /*
     @OneToMany(mappedBy = "currency", cascade = CascadeType.ALL)
     private List<Subscription> subscriptions;
-
-    @OneToMany(mappedBy = "defaultCurrency", cascade = CascadeType.ALL)
-    private List<UserSettings> userSettings;*/
+     */
 }

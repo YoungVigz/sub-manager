@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import pl.gabgal.submanager.backend.enums.Cycle;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
