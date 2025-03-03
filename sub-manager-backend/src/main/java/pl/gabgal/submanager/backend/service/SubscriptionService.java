@@ -1,16 +1,13 @@
 package pl.gabgal.submanager.backend.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Valid;
-import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.gabgal.submanager.backend.dto.SubscriptionCreateRequest;
 import pl.gabgal.submanager.backend.dto.SubscriptionResponse;
+import pl.gabgal.submanager.backend.enums.Cycle;
 import pl.gabgal.submanager.backend.model.Currency;
 import pl.gabgal.submanager.backend.model.Subscription;
 import pl.gabgal.submanager.backend.model.User;
@@ -18,9 +15,8 @@ import pl.gabgal.submanager.backend.repository.CurrencyRepository;
 import pl.gabgal.submanager.backend.repository.SubscriptionRepository;
 import pl.gabgal.submanager.backend.repository.UserRepository;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +26,7 @@ public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
     private final CurrencyRepository currencyRepository;
+    private final PaymentService paymentService;
 
     public SubscriptionResponse createSubscription(SubscriptionCreateRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -50,6 +47,10 @@ public class SubscriptionService {
         subscription.setUser(user);
 
         Subscription savedSubscription = subscriptionRepository.save(subscription);
+
+        paymentService.createNewPayment(request.dateOfLastPayment(), savedSubscription, request.cycle(), true);
+        paymentService.createNewPayment(request.dateOfLastPayment(), savedSubscription, request.cycle(), false);
+
 
         return new SubscriptionResponse(
                 savedSubscription.getSubscriptionId(),

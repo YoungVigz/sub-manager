@@ -19,7 +19,6 @@ public record SubscriptionCreateRequest(
         @Positive(message = "Price must be greater than zero")
         float price,
 
-        @EnumValid(enumClass = Cycle.class)
         Cycle cycle,
 
         @NotNull(message = "Date of last payment is required")

@@ -5,7 +5,9 @@ import lombok.*;
 import pl.gabgal.submanager.backend.enums.Cycle;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -43,4 +45,7 @@ public class Subscription {
     @ManyToOne
     @JoinColumn(name = "currency_id", nullable = false)
     private Currency currency;
+
+    @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments = new ArrayList<>();
 }

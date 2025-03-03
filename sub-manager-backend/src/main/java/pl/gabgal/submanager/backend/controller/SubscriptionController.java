@@ -7,10 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.gabgal.submanager.backend.dto.SubscriptionCreateRequest;
 import pl.gabgal.submanager.backend.dto.SubscriptionResponse;
-import pl.gabgal.submanager.backend.model.Subscription;
 import pl.gabgal.submanager.backend.service.SubscriptionService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
