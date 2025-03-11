@@ -12,6 +12,7 @@ import pl.gabgal.submanager.backend.service.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
