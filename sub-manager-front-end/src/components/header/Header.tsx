@@ -8,7 +8,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({}: HeaderProps) => {
 
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(getAuthTokenFromCookie() ? true : false);
 
   function getAuthTokenFromCookie() {
     const cookie = document.cookie
@@ -18,16 +18,6 @@ const Header: React.FC<HeaderProps> = ({}: HeaderProps) => {
     return cookie ? cookie.split('=')[1] : null;
   }
 
-  useEffect(() => {
-    const cookie = getAuthTokenFromCookie();
-
-    if(cookie) {
-      setIsLogin(true);
-    }
-
-  }, [])
-
-
   function logout() {
     document.cookie = "JWT=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
     setIsLogin(false);
@@ -36,14 +26,12 @@ const Header: React.FC<HeaderProps> = ({}: HeaderProps) => {
 
   return (
     <header className="flex items-center justify-around">
-        <h1 className="header-logo font-bold text-2xl">
+        <h1 className="header-logo font-bold text-lg md:text-xl lg:text-2xl">
           <Link href="/">
             Logo
           </Link>
         </h1>
-        <div className="header-links flex justify-between items-center">
-            <div className="header-links--link">About</div>
-
+        <div className="header-links flex justify-between items-center text-sm md:text-base">
             {isLogin === false 
             ? 
             <Link href="/auth">
@@ -54,7 +42,6 @@ const Header: React.FC<HeaderProps> = ({}: HeaderProps) => {
               <div onClick={logout}>Logout!</div>
             </>  
             }
-            
         </div>
     </header>
   );

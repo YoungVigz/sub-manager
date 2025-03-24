@@ -11,7 +11,7 @@ const Footer: React.FC<FooterProps> = ({}: FooterProps) => {
     }
 
     return (
-        <footer className="flex justify-center items-center">
+        <footer className="flex justify-center items-center text-sm md:text-base lg:text-lg">
             Made with love &#9829; by Gabriel Gałęza &copy; {getCurrentYear()}
         </footer>
     )

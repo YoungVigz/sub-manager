@@ -11,7 +11,19 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --primary: #5DD62C;
+    --secondary: #337418;
+    --accent: #202020;
+    --text-dim: #a0a0a0;
   }
+}
+
+.text-secondary {
+  color: var(--text-dim);
+}
+
+.text-opposite {
+  color: var(--accent);
 }
 
 body {
@@ -26,17 +38,33 @@ header {
 }
 
 .header-links {
-  width: 10%;
 }
 
 .header-links--link__featured {
-  border: solid 2px green;
+  border: solid 2px var(--secondary);
   border-radius: 25px;
 }
 
 main {
   width: 100vw;
   height: 85vh;
+}
+
+.button {
+  background-color: var(--primary);
+  padding: 10px;
+  border-radius: 5px;
+  min-width: 150px;
+  box-shadow: 0px 3px 20px 4px var(--secondary);
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  box-shadow: 0px 3px 20px 8px var(--secondary);
+}
+
+.landing-img {
+  width: 65%;
 }
 
 footer {
