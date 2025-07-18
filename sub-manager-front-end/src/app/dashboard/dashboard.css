@@ -1,0 +1,9 @@
+@import "../globals.css";
+
+.dashboard-nav-item:hover {
+    background: var(--secondary) !important;
+}
+
+.dashboard-nav-item__active {
+    background: var(--primary) !important;
+}

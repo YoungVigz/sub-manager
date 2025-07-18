@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({}: HeaderProps) => {
   }
 
   return (
-    <header className="flex items-center justify-around">
+    <header className="flex items-center justify-around border-b-slate-500">
         <h1 className="header-logo font-bold text-lg md:text-xl lg:text-2xl">
           <Link href="/">
             Logo
@@ -35,11 +35,11 @@ const Header: React.FC<HeaderProps> = ({}: HeaderProps) => {
             {isLogin === false 
             ? 
             <Link href="/auth">
-              <div className="header-links--link header-links--link__featured p-3">Get Started</div>
+              <div className="header-links--link header-links--link__featured p-3">Login</div>
             </Link>
             :
             <>
-              <div onClick={logout}>Logout!</div>
+              <div onClick={logout} className="button-secondary">Logout!</div>
             </>  
             }
         </div>

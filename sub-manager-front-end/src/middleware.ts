@@ -6,8 +6,6 @@ export function middleware(req: NextRequest) {
     const token = req.cookies.get('JWT')?.value;
     const { pathname } = req.nextUrl;
 
-    console.log(pathname)
-
     const protectedRoutes = ["/dashboard"]; 
     const authRoute = "/auth";      
 

@@ -1,5 +1,7 @@
 "use client"
 
+import Footer from "@/components/footer/Footer";
+import Header from "@/components/header/Header";
 import { useEffect, useState } from "react"
 
 enum AuthType {
@@ -113,93 +115,97 @@ export default function Auth() {
     }
 
     return (
-      <div className=""> 
+      <>
+        <Header/>
+        <main className="flex flex-col justify-center items-center w-full min-h-full text-center"> 
 
-        <form onSubmit={handleSubmit} className="flex flex-col h-80">
+          <form onSubmit={handleSubmit} className="flex flex-col h-80">
 
-          { authType === AuthType.REGISTER ? (
-            <>
-              <h1 className="mb-5 font-bold text-2xl text-center">Create account</h1>
+            { authType === AuthType.REGISTER ? (
+              <>
+                <h1 className="mb-5 font-bold text-2xl text-center">Create account</h1>
 
-              <input
-                className={`mb-5 px-5 py-2 rounded-lg text-opposite border-2 ${
-                  error.username ? "border-red-500" : ""
-                }`}
-                type="text"
-                name="username"
-                placeholder="Username"
-                value={formData.username}
-                onChange={handleChange}
-                onBlur={checkForErrors}
-                onFocus={clearError}
-              />
+                <input
+                  className={`mb-5 px-5 py-2 rounded-lg text-opposite border-2 ${
+                    error.username ? "border-red-500" : ""
+                  }`}
+                  type="text"
+                  name="username"
+                  placeholder="Username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  onBlur={checkForErrors}
+                  onFocus={clearError}
+                />
+                
+                <input
+                  className={`mb-5 px-5 py-2 rounded-lg text-opposite border-2 ${
+                    error.email ? "border-red-500" : ""
+                  }`}
+                  type="text"
+                  name="email"
+                  placeholder="E-mail"
+                  value={formData.email}
+                  onChange={handleChange}
+                  onBlur={checkForErrors}
+                  onFocus={clearError}
+                />
+
+                <input
+                  className={`mb-5 px-5 py-2 rounded-lg text-opposite border-2 ${
+                    error.password ? "border-red-500" : ""
+                  }`}
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  onBlur={checkForErrors}
+                  onFocus={clearError}
+                />
+
+                <button type="submit" className="button">Sign up</button>
+              </>
+            ) : (
+              <>
+                <h1 className="mb-5 font-bold text-2xl text-center">Login</h1>
               
-              <input
-                className={`mb-5 px-5 py-2 rounded-lg text-opposite border-2 ${
-                  error.email ? "border-red-500" : ""
-                }`}
-                type="text"
-                name="email"
-                placeholder="E-mail"
-                value={formData.email}
-                onChange={handleChange}
-                onBlur={checkForErrors}
-                onFocus={clearError}
-              />
+                <input
+                  className={`mb-5 px-5 py-2 rounded-lg text-opposite border-2 ${
+                    error.username ? "border-red-500" : ""
+                  }`}
+                  type="text"
+                  name="username"
+                  placeholder="Username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  onBlur={checkForErrors}
+                  onFocus={clearError}
+                />
 
-              <input
-                className={`mb-5 px-5 py-2 rounded-lg text-opposite border-2 ${
-                  error.password ? "border-red-500" : ""
-                }`}
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                onBlur={checkForErrors}
-                onFocus={clearError}
-              />
+                <input
+                  className={`mb-5 px-5 py-2 rounded-lg text-opposite border-2 ${
+                    error.password ? "border-red-500" : ""
+                  }`}
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  onFocus={clearError}
+                />
+                <button type="submit" className="button">Sign in</button>
+              </>
+            ) }
 
-              <button type="submit" className="button">Sign up</button>
-            </>
-          ) : (
-            <>
-              <h1 className="mb-5 font-bold text-2xl text-center">Login</h1>
-            
-              <input
-                className={`mb-5 px-5 py-2 rounded-lg text-opposite border-2 ${
-                  error.username ? "border-red-500" : ""
-                }`}
-                type="text"
-                name="username"
-                placeholder="Username"
-                value={formData.username}
-                onChange={handleChange}
-                onBlur={checkForErrors}
-                onFocus={clearError}
-              />
-
-              <input
-                className={`mb-5 px-5 py-2 rounded-lg text-opposite border-2 ${
-                  error.password ? "border-red-500" : ""
-                }`}
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                onFocus={clearError}
-              />
-              <button type="submit" className="button">Sign in</button>
-            </>
-          ) }
-
-        </form>
-  
-        <div className="mt-5 cursor-pointer underline" onClick={changeAuthType}>
-          { authType === AuthType.REGISTER ? (<p>Already have an account? Log in</p>) : (<p>Do not have an account? Sign up</p>)}
-        </div>
-      </div>
+          </form>
+    
+          <div className="mt-5 cursor-pointer underline" onClick={changeAuthType}>
+            { authType === AuthType.REGISTER ? (<p>Already have an account? Log in</p>) : (<p>Do not have an account? Sign up</p>)}
+          </div>
+        </main>
+        <Footer/>
+      </>
     )
   }
   
