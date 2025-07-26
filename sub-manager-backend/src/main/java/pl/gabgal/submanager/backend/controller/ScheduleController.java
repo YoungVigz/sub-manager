@@ -5,14 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import pl.gabgal.submanager.backend.enums.Notify;
+import pl.gabgal.submanager.backend.enums.Status;
 import pl.gabgal.submanager.backend.model.Payment;
 import pl.gabgal.submanager.backend.repository.PaymentRepository;
 import pl.gabgal.submanager.backend.service.EmailService;
+import pl.gabgal.submanager.backend.service.PaymentService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,6 +21,8 @@ public class ScheduleController {
 
     private final PaymentRepository paymentRepository;
     private final EmailService emailService;
+
+    private final PaymentService paymentService;
 
     @Scheduled(fixedRate = 15000)
     public void notifyUsers() {
@@ -55,4 +58,34 @@ public class ScheduleController {
             }
         });
     }
+
+    @Scheduled(fixedRate = 15000)
+    public void handleUnprocessedPayments() {
+        List<Payment> payments = paymentRepository.findUnprocessedPayments();
+
+        for (Payment payment : payments) {
+            payment.setStatus(Status.PAID);
+            paymentRepository.save(payment);
+
+            java.sql.Date sqlDate = (java.sql.Date) payment.getDateOfPayment();
+            LocalDate currentPaymentDate = sqlDate.toLocalDate();
+
+            LocalDate nextPaymentDate = switch (payment.getSubscription().getCycle()) {
+                case MONTHLY -> currentPaymentDate.plusMonths(1);
+                case YEARLY  -> currentPaymentDate.plusYears(1);
+                default      -> throw new IllegalArgumentException("Unsupported Cycle: " + payment.getSubscription().getCycle());
+            };
+
+            java.sql.Date nextDateAsSqlDate = java.sql.Date.valueOf(nextPaymentDate);
+
+            Payment newPayment = new Payment();
+            newPayment.setSubscription(payment.getSubscription());
+            newPayment.setDateOfPayment(nextDateAsSqlDate);
+            newPayment.setStatus(Status.UNPROCESSED);
+            newPayment.setNotificationStatus(Notify.UNNOTIFIED);
+            paymentRepository.save(newPayment);
+        }
+    }
+
+
 }

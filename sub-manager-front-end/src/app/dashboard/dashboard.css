@@ -7,3 +7,7 @@
 .dashboard-nav-item__active {
     background: var(--primary) !important;
 }
+
+.user-button {
+    border: 1px solid var(--primary);
+}

@@ -1,5 +1,6 @@
 "use client"
 
+import { logout } from "@/utils/auth-functions";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -18,11 +19,7 @@ const Header: React.FC<HeaderProps> = ({}: HeaderProps) => {
     return cookie ? cookie.split('=')[1] : null;
   }
 
-  function logout() {
-    document.cookie = "JWT=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-    setIsLogin(false);
-    window.location.reload();
-  }
+
 
   return (
     <header className="flex items-center justify-around border-b-slate-500">
