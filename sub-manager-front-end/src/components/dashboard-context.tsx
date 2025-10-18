@@ -1,7 +1,7 @@
 "use client";
 
 import { Payment, Subscription } from '@/types'
-import { getAuthTokenFromCookie } from '@/utils/auth-functions'
+import { getAuthTokenFromCookie, logout } from '@/utils/auth-functions'
 import { createContext, useContext, useEffect, useState } from 'react'
 
 type TabKey = "overview" | "subscriptions" | "payments"
@@ -37,6 +37,18 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
   useEffect(() => {
     const token = getAuthTokenFromCookie()
     const URL = 'http://localhost:8080/api/';
+
+    fetch(`${URL}auth/validateToken?token=${token}`)
+      .then(r => {
+        const isTokenValid = r.ok
+
+        console.log(isTokenValid)
+
+        if(!isTokenValid) {
+          logout()
+        }
+      })
+      .catch(console.error)
 
     fetch(`${URL}subscription`, {
       headers: { Authorization: `Bearer ${token}` }

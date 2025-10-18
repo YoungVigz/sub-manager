@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({}: HeaderProps) => {
     <header className="flex items-center justify-around border-b-slate-500">
         <h1 className="header-logo font-bold text-lg md:text-xl lg:text-2xl">
           <Link href="/">
-            Logo
+            <img src="/Logo.svg" alt="Logo" />
           </Link>
         </h1>
         <div className="header-links flex justify-between items-center text-sm md:text-base">

@@ -20,7 +20,7 @@ export default function LandingPage() {
           </button>
         </div>
 
-        <img className="landing-img hidden md:block" src="./landing-placeholder.png" alt="Image showing dashboard of the app." />
+        <img className="landing-img hidden md:block" src="./landing-placeholder-dim.png" alt="Image showing dashboard of the app." />
       </main>
 
       <Footer />

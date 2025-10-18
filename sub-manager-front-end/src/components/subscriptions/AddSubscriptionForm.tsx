@@ -24,11 +24,11 @@ import { cn } from "@/lib/utils"
 import { getAuthTokenFromCookie } from "@/utils/auth-functions"
 
 const formSchema = z.object({
-  title:             z.string().min(1, "Nazwa jest wymagana"),
+  title:             z.string().min(1, "Title is required"),
   description:       z.string().optional(),
-  price:             z.number().positive("Cena musi być większa niż 0"),
+  price:             z.number().positive("Price must be grater then 0"),
   cycle:             z.enum(["MONTHLY", "YEARLY"]),
-  dateOfLastPayment: z.date().refine(d => d instanceof Date, "Data jest wymagana"),
+  dateOfLastPayment: z.date().refine(d => d instanceof Date, "Date is required"),
   currencyId:        z.literal(1),
 })
 
@@ -83,77 +83,80 @@ export default function AddSubscriptionForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-md">
-      {/* Nazwa */}
-      <div>
-        <Label htmlFor="title">Nazwa</Label>
-        <Input id="title" {...register("title")} />
-        {errors.title && (
-          <p className="text-sm text-red-500">{errors.title.message}</p>
-        )}
-      </div>
+    <>
+      <h2 className="text-xl font-semibold">Add Subscription</h2>
 
-      {/* Opis */}
-      <div>
-        <Label htmlFor="description">Opis</Label>
-        <Textarea id="description" {...register("description")} />
-      </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-md">
+        {/* Nazwa */}
+        <div>
+          <Label htmlFor="title">Title</Label>
+          <Input id="title" {...register("title")} />
+          {errors.title && (
+            <p className="text-sm text-red-500">{errors.title.message}</p>
+          )}
+        </div>
 
-      {/* Cena */}
-      <div>
-        <Label htmlFor="price">Cena</Label>
-        <Input
-          id="price"
-          type="number"
-          step="0.01"
-          {...register("price", { valueAsNumber: true })}
-        />
-        {errors.price && (
-          <p className="text-sm text-red-500">{errors.price.message}</p>
-        )}
-      </div>
+        {/* Opis */}
+        <div>
+          <Label htmlFor="description">Description</Label>
+          <Textarea id="description" {...register("description")} />
+        </div>
 
-      {/* Cykl */}
-      <div>
-        <Label htmlFor="cycle">Cykl</Label>
-        <Select
-          defaultValue="MONTHLY"
-          onValueChange={(val: "MONTHLY" | "YEARLY") =>
-            setValue("cycle", val, { shouldValidate: true })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Wybierz cykl" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="MONTHLY">Miesięczny</SelectItem>
-            <SelectItem value="YEARLY">Roczny</SelectItem>
-          </SelectContent>
-        </Select>
-        {errors.cycle && (
-          <p className="text-sm text-red-500">{errors.cycle.message}</p>
-        )}
-      </div>
+        {/* Cena */}
+        <div>
+          <Label htmlFor="price">Price</Label>
+          <Input
+            id="price"
+            type="number"
+            step="0.01"
+            {...register("price", { valueAsNumber: true })}
+          />
+          {errors.price && (
+            <p className="text-sm text-red-500">{errors.price.message}</p>
+          )}
+        </div>
 
-      {/* Data ostatniej płatności */}
-      <div className="flex flex-col gap-1">
-        <Label>Data ostatniej płatności</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !selectedDate && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {selectedDate
-                ? format(selectedDate, "yyyy-MM-dd")
-                : "Wybierz datę"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
+        {/* Cykl */}
+        <div>
+          <Label htmlFor="cycle">Cycle</Label>
+          <Select
+            defaultValue="MONTHLY"
+            onValueChange={(val: "MONTHLY" | "YEARLY") =>
+              setValue("cycle", val, { shouldValidate: true })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Wybierz cykl" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="MONTHLY">Monthly</SelectItem>
+              <SelectItem value="YEARLY">Yearly</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.cycle && (
+            <p className="text-sm text-red-500">{errors.cycle.message}</p>
+          )}
+        </div>
+
+        {/* Data ostatniej płatności */}
+        <div className="flex flex-col gap-1">
+          <Label>Date of last payment</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !selectedDate && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate
+                  ? format(selectedDate, "yyyy-MM-dd")
+                  : "Select date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
             <Calendar
               mode="single"
               selected={selectedDate}
@@ -167,19 +170,20 @@ export default function AddSubscriptionForm() {
               }}
               required
             />
-          </PopoverContent>
-        </Popover>
-        {errors.dateOfLastPayment && (
-          <p className="text-sm text-red-500">
-            {errors.dateOfLastPayment.message}
-          </p>
-        )}
-      </div>
+            </PopoverContent>
+          </Popover>
+          {errors.dateOfLastPayment && (
+            <p className="text-sm text-red-500">
+              {errors.dateOfLastPayment.message}
+            </p>
+          )}
+        </div>
 
-      {/* Submit */}
-      <Button type="submit" disabled={loading}>
-        {loading ? "Wysyłanie..." : "Dodaj subskrypcję"}
-      </Button>
-    </form>
+        {/* Submit */}
+        <Button type="submit" className="bg-[var(--primary)] text-white hover:bg-[var(--secondary)]" disabled={loading}>
+          {loading ? "Sending..." : "Add subscription"}
+        </Button>
+      </form>
+    </>
   )
 }

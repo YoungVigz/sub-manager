@@ -72,6 +72,27 @@ footer {
   height: 5vh;
 }
 
+/* Wybrany dzień */
+.rdp-day[data-selected-single="true"] {
+  background-color: var(--primary) !important;
+  color: white !important;
+  border-radius: 0.375rem !important; /* dopasuj jeśli chcesz */
+}
+
+/* Hover nad wybranym dniem */
+.rdp-day[data-selected-single="true"]:hover {
+  background-color: var(--secondary) !important;
+  color: white !important;
+  border-radius: 0.375rem !important;
+}
+
+/* Hover nad wszystkimi dniami */
+.rdp-day:hover {
+  background-color: var(--secondary) !important;
+  color: white !important;
+  border-radius: 0.375rem !important;
+}
+
 
 
 @layer base {

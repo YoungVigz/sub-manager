@@ -53,7 +53,7 @@ public class AuthController {
             Boolean res = authService.validateToken(token);
             return ResponseEntity.ok(res);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 }

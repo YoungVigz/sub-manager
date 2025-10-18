@@ -23,12 +23,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SubscriptionService {
 
-    private final SubscriptionRepository subscriptionRepository;
-    private final UserRepository userRepository;
-    private final CurrencyRepository currencyRepository;
-    private final PaymentService paymentService;
+        private final SubscriptionRepository subscriptionRepository;
+        private final UserRepository userRepository;
+        private final CurrencyRepository currencyRepository;
+        private final PaymentService paymentService;
 
-    public SubscriptionResponse createSubscription(SubscriptionCreateRequest request) {
+        public SubscriptionResponse createSubscription(SubscriptionCreateRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         User user = userRepository.findByUsername(username)
@@ -61,9 +61,9 @@ public class SubscriptionService {
                 savedSubscription.getDateOfLastPayment(),
                 currency.getCurrencyId()
         );
-    }
+        }
 
-    public List<SubscriptionResponse> getAllSubscriptions() {
+        public List<SubscriptionResponse> getAllSubscriptions() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         User user = userRepository.findByUsername(username)
@@ -82,9 +82,9 @@ public class SubscriptionService {
                         subscription.getCurrency().getCurrencyId()
                 ))
                 .collect(Collectors.toList());
-    }
+        }
 
-    public SubscriptionResponse getSubscriptionById(long subscriptionId) {
+        public SubscriptionResponse getSubscriptionById(long subscriptionId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         User user = userRepository.findByUsername(username)
@@ -102,5 +102,18 @@ public class SubscriptionService {
                 subscription.getDateOfLastPayment(),
                 subscription.getCurrency().getCurrencyId()
         );
-    }
+        }
+
+        public void deleteSubscription(Long subscriptionId) {
+                String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+                User user = userRepository.findByUsername(username)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+
+                Subscription subscription = subscriptionRepository.findByIdAndMatchUser(subscriptionId, user.getUserId())
+                        .orElseThrow(() -> new EntityNotFoundException("Subscription not found or you don't have permission!"));
+
+                subscriptionRepository.delete(subscription);
+        }
+
 }
