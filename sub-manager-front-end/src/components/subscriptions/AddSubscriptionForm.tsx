@@ -22,6 +22,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getAuthTokenFromCookie } from "@/utils/auth-functions"
+import { useDashboardContext } from "../dashboard-context";
 
 const formSchema = z.object({
   title:             z.string().min(1, "Title is required"),
@@ -36,6 +37,7 @@ type FormValues = z.infer<typeof formSchema>
 
 export default function AddSubscriptionForm() {
   const [loading, setLoading] = useState(false)
+  const { refreshData } = useDashboardContext()
 
   const {
     register,
@@ -74,11 +76,12 @@ export default function AddSubscriptionForm() {
         }),
       })
       if (!res.ok) throw new Error("Błąd serwera")
-      reset()  // resetujemy wszystkie pola do defaultValues
+      reset() 
     } catch (err) {
       console.error(err)
     } finally {
       setLoading(false)
+      refreshData()
     }
   }
 

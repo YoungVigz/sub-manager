@@ -11,9 +11,12 @@ import { Button } from "../ui/button"
 import { useState } from "react"
 import { Trash2 } from "lucide-react"
 import { getAuthTokenFromCookie } from "@/utils/auth-functions"
+import { EditSubscriptionDialog } from "./EditSubscriptionDialog"
+import { useDashboardContext } from "../dashboard-context"
 
 export function SubscriptionsTable({ data, onDelete }: { data: Subscription[], onDelete?: (id: number) => void } ) {
 
+  const { refreshData } = useDashboardContext()
   const [loadingId, setLoadingId] = useState<number | null>(null)
 
   const handleDelete = async (id: number) => {
@@ -31,17 +34,13 @@ export function SubscriptionsTable({ data, onDelete }: { data: Subscription[], o
 
       if (!res.ok) throw new Error("Nie udało się usunąć subskrypcji.")
 
-      // jeśli przekazano callback odświeżenia listy
-      if (onDelete) onDelete(id)
-      else window.location.reload()
+      refreshData()
     } catch (err) {
       alert((err as Error).message)
     } finally {
       setLoadingId(null)
     }
   }
-
-
 
   return (
     <Table>
@@ -64,6 +63,7 @@ export function SubscriptionsTable({ data, onDelete }: { data: Subscription[], o
             <TableCell>{sub.cycle}</TableCell>
             <TableCell>{new Date(sub.dateOfLastPayment).toLocaleDateString()}</TableCell>
             <TableCell className="text-right">
+              <EditSubscriptionDialog subscription={sub} /> 
               <Button
                 variant="destructive"
                 size="sm"

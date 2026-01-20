@@ -82,6 +82,7 @@ public class ScheduleController {
             newPayment.setSubscription(payment.getSubscription());
             newPayment.setDateOfPayment(nextDateAsSqlDate);
             newPayment.setStatus(Status.UNPROCESSED);
+            newPayment.setAmount(payment.getSubscription().getPrice());
             newPayment.setNotificationStatus(Notify.UNNOTIFIED);
             paymentRepository.save(newPayment);
         }

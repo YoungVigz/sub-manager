@@ -8,6 +8,8 @@ public record PaymentResponse(
         long paymentId,
         Status status,
         Date dateOfPayment,
-        long subscriptionId
+        float amount,
+        long subscriptionId,
+        String subscriptionTitle
 ) {
 }

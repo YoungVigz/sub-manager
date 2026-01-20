@@ -16,6 +16,7 @@ import {
 import { useDashboardContext } from "../dashboard-context"
 import { useMemo } from "react"
 import { generateGreenShades } from "@/utils/get-colors"
+import { Status } from "@/types"
 
 const chartConfig = {
   desktop: {
@@ -32,14 +33,14 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-const target = 4000 // przykładowy budżet
-
 export default function Overview() {
   const { payments, subscriptions } = useDashboardContext()
   const currentYear = new Date().getFullYear()
+  const currentMonth = new Date().getMonth()
 
+  // 1. DANE DO WYKRESU LINIOWEGO (Historia płatności w tym roku)
   const monthlyData = useMemo(() => {
-    if (!payments || !subscriptions) return []
+    if (!payments) return []
 
     const months = Array.from({ length: 12 }, (_, i) => ({
       month: new Date(0, i).toLocaleString("en", { month: "long" }),
@@ -48,63 +49,48 @@ export default function Overview() {
 
     payments.forEach((p) => {
       const date = new Date(p.dateOfPayment)
+      // Filtrujemy tylko ten rok.
+      // Jeśli chcesz widzieć tylko OPŁACONE na wykresie, dodaj: && p.status === "PAID"
       if (isNaN(date.getTime()) || date.getFullYear() !== currentYear) return
 
-      const sub = subscriptions.find((s) => s.subscriptionId === p.subscriptionId)
-      const price = sub?.price ?? 0
-      const monthIndex = date.getMonth()
-      months[monthIndex].total += price
+      months[date.getMonth()].total += p.amount
     })
 
     return months
-  }, [payments, subscriptions, currentYear])
-
-  // 🔹 Suma wszystkich płatności
-  const totalSpend = useMemo(() => {
-    return monthlyData.reduce((sum, d) => sum + d.total, 0)
-  }, [monthlyData])
-
-  // 🔹 Dane do kołowego wykresu
-  const pieData = [
-    { name: "Spend", value: totalSpend, fill: "var(--primary)" },
-    {
-      name: "Remaining",
-      value: target - totalSpend > 0 ? target - totalSpend : 0,
-      fill: "var(--secondary)",
-    },
-  ]
-
-  // 🔹 Obliczenia z oryginalnego kodu
-  const perMonth = subscriptions?.reduce((sum, sub) => {
-    if (sub.cycle === "MONTHLY") {
-      return sum + sub.price
-    }
-    return sum + sub.price / 12
-  }, 0)
-
-  const paymentsThisYear = useMemo(() => {
-    if (!payments) return []
-    return payments.filter((p) => {
-      const d = new Date(p.dateOfPayment)
-      return !isNaN(d.getTime()) && d.getFullYear() === currentYear
-    })
   }, [payments, currentYear])
 
-  const overallYear = useMemo(() => {
-    if (!subscriptions) return 0
-    return paymentsThisYear.reduce((sum, pay) => {
-      const sub = subscriptions.find((s) => s.subscriptionId === pay.subscriptionId)
-      return sum + (sub?.price ?? 0)
-    }, 0)
-  }, [paymentsThisYear, subscriptions])
+  // 2. CURRENT USAGE (Suma płatności w tym miesiącu - opłacone i nieopłacone)
+  const currentUsage = useMemo(() => {
+    if (!payments) return 0
+    
+    return payments
+      .filter(p => {
+        const d = new Date(p.dateOfPayment)
+        // Sprawdzamy czy to ten rok i ten miesiąc
+        return d.getFullYear() === currentYear && d.getMonth() === currentMonth
+      })
+      .reduce((sum, p) => sum + p.amount, 0)
+  }, [payments, currentYear, currentMonth])
 
+  // 3. SPEND THIS YEAR (Tylko opłacone w tym roku)
+  const overallYear = useMemo(() => {
+    if (!payments) return 0
+    return payments
+      .filter(p => {
+        const d = new Date(p.dateOfPayment)
+        // Status PAID (lub enum w zależności jak przychodzi z backendu, zazwyczaj string "PAID")
+        return d.getFullYear() === currentYear && String(p.status) === "PAID"
+      })
+      .reduce((sum, p) => sum + p.amount, 0)
+  }, [payments, currentYear])
+
+  // 4. TOTAL SPEND ALL TIME (Tylko opłacone)
   const overallAllTime = useMemo(() => {
-    if (!payments || !subscriptions) return 0
-    return payments.reduce((sum, pay) => {
-      const sub = subscriptions.find((s) => s.subscriptionId === pay.subscriptionId)
-      return sum + (sub?.price ?? 0)
-    }, 0)
-  }, [payments, subscriptions])
+    if (!payments) return 0
+    return payments
+        .filter(p => String(p.status) === "PAID")
+        .reduce((sum, p) => sum + p.amount, 0)
+  }, [payments])
 
   return (
     <div className="w-full p-4 rounded-lg">
@@ -112,10 +98,10 @@ export default function Overview() {
 
       <div className="w-full grid grid-rows-[2fr_1fr] gap-6">
         <div className="w-full flex gap-6">
-          {/* AreaChart - dynamiczne dane */}
+          {/* Wykres historyczny */}
           <Card className="w-1/2 bg-[var(--sidebar-background)] border-[var(--accent)]">
             <CardHeader>
-              <CardTitle>Payments</CardTitle>
+              <CardTitle>Payments History ({currentYear})</CardTitle>
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig}>
@@ -148,10 +134,10 @@ export default function Overview() {
             </CardContent>
           </Card>
 
-          {/* 🔹 PieChart — udział subskrypcji */}
+          {/* Wykres kołowy - Udział w kosztach (Tylko AKTYWNE subskrypcje) */}
           <Card className="w-1/2 bg-[var(--sidebar-background)] border-[var(--accent)]">
             <CardHeader>
-              <CardTitle>Subscriptions share</CardTitle>
+              <CardTitle>Active Subscriptions Cost Share</CardTitle>
             </CardHeader>
             <CardContent>
               <ChartContainer
@@ -160,17 +146,12 @@ export default function Overview() {
               >
                 {subscriptions && subscriptions.length > 0 ? (
                   (() => {
-                    // 🔸 przelicz miesięczne wartości
                     const subsWithMonthlyValue = subscriptions.map((s) => ({
                       name: s.title || "Unknown",
                       value: s.cycle === "YEARLY" ? s.price / 12 : s.price,
                     }))
 
-                    const total = subsWithMonthlyValue.reduce(
-                      (sum, s) => sum + s.value,
-                      0
-                    )
-
+                    const total = subsWithMonthlyValue.reduce((sum, s) => sum + s.value, 0)
                     const greenShades = generateGreenShades(subsWithMonthlyValue.length)
                     const pieData = subsWithMonthlyValue.map((s, i) => ({
                       ...s,
@@ -179,10 +160,7 @@ export default function Overview() {
 
                     return (
                       <PieChart width={0} height={250} className="max-h-[250px]">
-                        <ChartTooltip
-                          cursor={false}
-                          content={<ChartTooltipContent hideLabel />}
-                        />
+                        <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
                         <Pie
                           data={pieData}
                           dataKey="value"
@@ -195,24 +173,11 @@ export default function Overview() {
                             content={({ viewBox }) => {
                               if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                                 return (
-                                  <text
-                                    x={viewBox.cx}
-                                    y={viewBox.cy}
-                                    textAnchor="middle"
-                                    dominantBaseline="middle"
-                                  >
-                                    <tspan
-                                      x={viewBox.cx}
-                                      y={viewBox.cy}
-                                      className="fill-foreground text-3xl font-bold"
-                                    >
+                                  <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
+                                    <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-3xl font-bold">
                                       {total.toFixed(2)} zł
                                     </tspan>
-                                    <tspan
-                                      x={viewBox.cx}
-                                      y={(viewBox.cy || 0) + 22}
-                                      className="fill-muted-foreground text-sm"
-                                    >
+                                    <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 22} className="fill-muted-foreground text-sm">
                                       total monthly
                                     </tspan>
                                   </text>
@@ -253,35 +218,35 @@ export default function Overview() {
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center">
               <span className="text-3xl font-bold text-[var(--primary)]">
-                {perMonth?.toFixed(2)}zł/month
+                {currentUsage.toFixed(2)}zł
+              </span>
+              <span className="text-sm text-muted-foreground">
+                this month
               </span>
             </CardContent>
           </Card>
 
           <Card className="w-1/4 bg-[var(--sidebar-background)] border-[var(--accent)]">
             <CardHeader>
-              <CardTitle>Overall this year</CardTitle>
+              <CardTitle>Spend this year</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center">
               <span className="text-3xl font-bold text-[var(--primary)]">
-                {overallYear?.toFixed(2)}zł
+                {overallYear.toFixed(2)}zł
               </span>
               <span className="text-sm text-muted-foreground">
-                spend in {currentYear}
+                in {currentYear}
               </span>
             </CardContent>
           </Card>
 
           <Card className="w-1/4 bg-[var(--sidebar-background)] border-[var(--accent)]">
             <CardHeader>
-              <CardTitle>Overall all time</CardTitle>
+              <CardTitle>Total spend all time</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center">
               <span className="text-3xl font-bold text-[var(--primary)]">
-                {overallAllTime?.toFixed(2)}zł
-              </span>
-              <span className="text-sm text-muted-foreground">
-                spend on subscriptions
+                {overallAllTime.toFixed(2)}zł
               </span>
             </CardContent>
           </Card>

@@ -17,5 +17,7 @@ export interface Payment {
   paymentId: number,
   status: Status,
   dateOfPayment: string,
-  subscriptionId: number
+  amount: number,
+  subscriptionId: number,
+  subscriptionTitle: string
 }

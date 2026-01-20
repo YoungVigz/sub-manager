@@ -55,7 +55,9 @@ public class PaymentService {
                         payment.getPaymentId(),
                         payment.getStatus(),
                         payment.getDateOfPayment(),
-                        payment.getSubscription().getSubscriptionId()
+                        payment.getAmount(),
+                        payment.getSubscription().getSubscriptionId(),
+                        payment.getSubscription().getTitle()
                 ))
                 .collect(Collectors.toList());
     }
@@ -64,6 +66,7 @@ public class PaymentService {
 
         Payment payment = new Payment();
         payment.setSubscription(subscription);
+        payment.setAmount(subscription.getPrice());
 
         if(isOld) {
             payment.setDateOfPayment(date);
@@ -96,26 +99,52 @@ public class PaymentService {
         current.setNotificationStatus(Notify.NOTIFIED);
         paymentRepository.save(current);
 
-        LocalDate baseDate = ((java.sql.Date) current.getDateOfPayment()).toLocalDate();
-        LocalDate nextDate = switch (current.getSubscription().getCycle()) {
-            case MONTHLY -> baseDate.plusMonths(1);
-            case YEARLY  -> baseDate.plusYears(1);
-            default      -> throw new IllegalArgumentException("Unsupported cycle");
-        };
+        if (current.getSubscription().isActive()) {
 
-        Payment next = new Payment();
-        next.setSubscription(current.getSubscription());
-        next.setDateOfPayment(java.sql.Date.valueOf(nextDate));
-        next.setStatus(Status.UNPROCESSED);
-        next.setNotificationStatus(Notify.UNNOTIFIED);
-        paymentRepository.save(next);
+            LocalDate baseDate = ((java.sql.Date) current.getDateOfPayment()).toLocalDate();
+            LocalDate nextDate = switch (current.getSubscription().getCycle()) {
+                case MONTHLY -> baseDate.plusMonths(1);
+                case YEARLY  -> baseDate.plusYears(1);
+                default      -> throw new IllegalArgumentException("Unsupported cycle");
+            };
 
-        return new PaymentResponse(
+            Payment next = new Payment();
+            next.setSubscription(current.getSubscription());
+            next.setDateOfPayment(java.sql.Date.valueOf(nextDate));
+            next.setStatus(Status.UNPROCESSED);
+            next.setAmount(current.getSubscription().getPrice());
+            next.setNotificationStatus(Notify.UNNOTIFIED);
+            paymentRepository.save(next);
+
+            return new PaymentResponse(
                 next.getPaymentId(),
                 next.getStatus(),
                 next.getDateOfPayment(),
-                next.getSubscription().getSubscriptionId()
+                next.getAmount(),
+                next.getSubscription().getSubscriptionId(),
+                next.getSubscription().getTitle()
+            );
+        }
+
+        return new PaymentResponse(
+            current.getPaymentId(),
+            current.getStatus(),
+            current.getDateOfPayment(),
+            current.getAmount(),
+            current.getSubscription().getSubscriptionId(),
+            current.getSubscription().getTitle()
         );
+    }
+
+    public void updateUnprocessedPaymentAmount(Subscription subscription) {
+        List<Payment> unprocessed = subscription.getPayments().stream()
+                .filter(p -> p.getStatus() == Status.UNPROCESSED)
+                .toList();
+        
+        for (Payment p : unprocessed) {
+            p.setAmount(subscription.getPrice());
+            paymentRepository.save(p);
+        }
     }
 
 }

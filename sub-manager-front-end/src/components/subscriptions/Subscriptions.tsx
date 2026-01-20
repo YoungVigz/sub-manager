@@ -1,47 +1,21 @@
 "use client"
 
-import { getAuthTokenFromCookie } from "@/utils/auth-functions";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SubscriptionsTable } from "./subscriptions-table";
 import { Skeleton } from "../ui/skeleton";
-import { Pagination } from "../ui/pagination";
 import AddSubscriptionForm from "./AddSubscriptionForm";
-import { Subscription } from "@/types";
+import { useDashboardContext } from "../dashboard-context";
 
 const PAGE_SIZE = 10
 
 export default function Subscriptions() {
-    const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
-    const [loading, setLoading] = useState<boolean>(true)
+    const { subscriptions, loadingSubs } = useDashboardContext() 
+    const [page, setPage] = useState(1) 
 
-    const [page, setPage] = useState(1)
+    const safeSubscriptions = subscriptions || [];
 
-    useEffect(() => {
-        const token = getAuthTokenFromCookie()
-
-        const fetchData = async () => {
-            try {
-                const res = await fetch('http://localhost:8080/api/subscription', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                })
-
-                const data: Subscription[] = await res.json()
-                setSubscriptions(data)
-                setLoading(false)
-            } catch (err) {
-                console.error("Błąd podczas pobierania subskrypcji:", err)
-                setLoading(false)
-            }
-        }
-        
-        fetchData()
-    }, [])
-
-
-    const totalPages = Math.ceil(subscriptions.length / PAGE_SIZE)
-    const currentItems = subscriptions.slice(
+    const totalPages = Math.ceil(safeSubscriptions.length / PAGE_SIZE)
+    const currentItems = safeSubscriptions.slice(
         (page - 1) * PAGE_SIZE,
         page * PAGE_SIZE
     )
@@ -52,7 +26,7 @@ export default function Subscriptions() {
 
             <h2 className="text-xl font-semibold">Your Subscriptions</h2>
 
-            {loading ? (
+            {loadingSubs  ? (
                 <div className="space-y-2">
                 {[...Array(PAGE_SIZE)].map((_, i) => (
                     <Skeleton key={i} className="h-6 w-full" />
@@ -61,9 +35,15 @@ export default function Subscriptions() {
             ) : (
                 <>
                 <SubscriptionsTable data={currentItems} />
-                <div className="flex justify-center pt-4">
-                    <Pagination/>
-                </div>
+                {safeSubscriptions.length > PAGE_SIZE && (
+                     <div className="flex justify-center items-center pt-4">
+                        <div className="flex gap-2">
+                            <button disabled={page === 1} onClick={() => setPage(p => p - 1)} className="px-3 py-1 border rounded disabled:opacity-50">Prev</button>
+                            <span className="flex items-center">Page {page} of {totalPages}</span>
+                            <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)} className="px-3 py-1 border rounded disabled:opacity-50">Next</button>
+                        </div>
+                    </div>
+                )}
                 </>
             )}
         </div>

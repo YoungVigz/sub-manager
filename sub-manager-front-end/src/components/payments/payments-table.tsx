@@ -13,19 +13,20 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { AlertDialogFooter, AlertDialogHeader } from "../ui/alert-dialog";
 import { useState } from "react";
 import { getAuthTokenFromCookie } from "@/utils/auth-functions";
+import { useDashboardContext } from "../dashboard-context";
 
 export function PaymentsTable({ payments, subscriptions }: { payments: Payment[] | null, subscriptions: Subscription[] | null}) {
     const [open, setOpen] = useState(false);
     const [selectedPaymentId, setSelectedPaymentId] = useState<number | null>(null);
-    const [data, setData] = useState<Payment[]>(payments ?? []);
+    const { refreshData } = useDashboardContext()
 
     if (payments === null || subscriptions === null) {
         return "detseta";
     } 
 
     const sortedData = [...payments].sort((a, b) => {
-        if (a.status == Status.UNPROCESSED && b.status != Status.UNPROCESSED) return -1
-        if (a.status != Status.UNPROCESSED && b.status == Status.UNPROCESSED) return 1
+        if (a.dateOfPayment < b.dateOfPayment) return 1
+        if (a.dateOfPayment >= b.dateOfPayment) return -1
 
         return 0;
     })
@@ -47,12 +48,8 @@ export function PaymentsTable({ payments, subscriptions }: { payments: Payment[]
             });
 
             if (!res.ok) throw new Error('Network response was not ok');
-
-            setData((prev) =>
-                prev.map((p) =>
-                    p.paymentId === selectedPaymentId ? { ...p, status: Status.PAID } : p
-                )
-            );
+            
+            refreshData()
 
         } catch (error) {
             console.error('Failed to process payment:', error);
@@ -79,8 +76,8 @@ export function PaymentsTable({ payments, subscriptions }: { payments: Payment[]
 
                 return ( 
                     <TableRow key={pay.paymentId}>
-                        <TableCell>{subscriptions.find(sub => sub.subscriptionId === pay.subscriptionId)?.title}</TableCell>
-                        <TableCell>{subscriptions.find(sub => sub.subscriptionId === pay.subscriptionId)?.price} zł</TableCell>
+                        <TableCell>{pay.subscriptionTitle}</TableCell>
+                        <TableCell>{pay.amount.toFixed(2)} zł</TableCell>
                         <TableCell>{new Date(pay.dateOfPayment).toLocaleDateString()}</TableCell>
                         <TableCell>
                             {statusIsUnprocessed ? (

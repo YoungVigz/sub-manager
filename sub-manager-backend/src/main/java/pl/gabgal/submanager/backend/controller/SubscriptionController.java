@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.gabgal.submanager.backend.dto.SubscriptionCreateRequest;
 import pl.gabgal.submanager.backend.dto.SubscriptionResponse;
 import pl.gabgal.submanager.backend.service.SubscriptionService;
+import pl.gabgal.submanager.backend.dto.SubscriptionUpdateRequest;
 
 import java.util.List;
 
@@ -35,6 +36,15 @@ public class SubscriptionController {
     public ResponseEntity<SubscriptionResponse> getSubscriptionById(@PathVariable Long id) {
         SubscriptionResponse subs = subscriptionService.getSubscriptionById(id);
         return ResponseEntity.status(HttpStatus.OK).body(subs);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SubscriptionResponse> updateSubscription(
+        @PathVariable Long id,
+        @Valid @RequestBody SubscriptionUpdateRequest request
+    ) {
+        SubscriptionResponse updated = subscriptionService.updateSubscription(id, request);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")

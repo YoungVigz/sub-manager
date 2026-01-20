@@ -33,9 +33,10 @@ public class Payment {
     @Column(name = "date_of_payment", nullable = false)
     private Date dateOfPayment;
 
+    @Column(nullable = false)
+    private float amount;
+
     @ManyToOne
     @JoinColumn(name = "subscription_id", nullable = false)
     private Subscription subscription;
-
-
 }
